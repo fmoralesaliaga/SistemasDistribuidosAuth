@@ -58,8 +58,6 @@ export default function Login() {
     })
       .then((response) => response.text())
       .then((result) => {
-        const objectStore = db.transaction.objectStore('toDoList');
-
         console.log(result);
       })
       .catch((error) => console.log('error', error));
