@@ -2,46 +2,28 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
+import jwt from 'jsonwebtoken';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function Login() {
   const [username, setUsername] = React.useState('');
   const [password, setPassword] = React.useState('');
 
-  function saveToken(db: any, userToken: any) {
-    // create a new transaction
-    const txn = db.transaction('userToken', 'readwrite');
+  const router = useRouter();
 
-    // get the Contacts object store
-    const store = txn.objectStore('userToken');
-    //
-    let query = store.put(userToken);
-
-    // handle success case
-    query.onsuccess = function (event: any) {
-      console.log(event);
-    };
-
-    // handle the error case
-    query.onerror = function (event: any) {
-      console.log(event.target.errorCode);
-    };
-
-    // close the database once the
-    // transaction completes
-    txn.oncomplete = function () {
-      db.close();
-    };
+  function decodeJWT(token: string) {
+    try {
+      const decoded = jwt.decode(token);
+      console.log(decoded);
+      return decoded;
+    } catch (error) {
+      console.error('Error al decodificar el token:', error);
+      return null;
+    }
   }
 
-  function Login() {
-    const request = indexedDB.open('Sesion', 6);
-    request.onupgradeneeded = () => {
-      let db = request.result;
-      if (!db.objectStoreNames.contains('token')) {
-        db.createObjectStore('token', { keyPath: 'key' });
-      }
-    };
-
+  function login() {
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
 
@@ -56,9 +38,15 @@ export default function Login() {
       body: raw,
       redirect: 'follow',
     })
-      .then((response) => response.text())
+      .then((response) => response.json()) // Asegúrate de que el servidor responda con JSON
       .then((result) => {
-        console.log(result);
+        // Aquí es donde guardas el token en localStorage
+        if (result.token) {
+          localStorage.setItem('token', result.token);
+          router.push('/dashboard');
+        } else {
+          console.log('No se recibió token:', result);
+        }
       })
       .catch((error) => console.log('error', error));
   }
@@ -121,7 +109,7 @@ export default function Login() {
               <button
                 type='submit'
                 onClick={() => {
-                  Login();
+                  login();
                 }}
                 className='flex w-full justify-center rounded-md bg-black px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-gray-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'
               >
