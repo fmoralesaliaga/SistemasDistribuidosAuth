@@ -73,15 +73,15 @@ export default function Login() {
         <div className='mt-10 sm:mx-auto sm:w-full sm:max-w-sm'>
           <div className='space-y-6'>
             <div>
-              <label htmlFor='username' className='block text-sm font-medium leading-6 text-gray-900'>
-                Nombre de Usuario
+              <label htmlFor='email' className='block text-sm font-medium leading-6 text-gray-900'>
+                Correo Electrónico
               </label>
               <div className='mt-2'>
                 <input
-                  id='username'
-                  name='username'
-                  type='username'
-                  autoComplete='username'
+                  id='email'
+                  name='email'
+                  type='email'
+                  autoComplete='email'
                   required
                   onChange={(e) => {
                     setUsername(e.target.value);
